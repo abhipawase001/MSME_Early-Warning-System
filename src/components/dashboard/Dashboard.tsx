@@ -196,7 +196,22 @@ export function Dashboard() {
             <Kpi label="Explainability" value="SHAP" hint="per-factor" />
           </div>
 
-          {/* Portfolio heatmap (top, full width) */}
+          {/* Triggers (hard-rule engine) */}
+          <div className="mb-6">
+            <TriggerChips borrower={borrower} />
+          </div>
+
+          {/* PD term structure + Model router */}
+          <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="col-span-2">
+              <PDTermStructure borrower={borrower} />
+            </div>
+            <div className="col-span-1">
+              <ModelRouter borrower={borrower} />
+            </div>
+          </div>
+
+          {/* Portfolio heatmap (full width) */}
           <div className="mb-6">
             <PortfolioHeatmap borrowers={BORROWERS} selectedId={selectedId} onSelect={setSelectedId} />
           </div>
