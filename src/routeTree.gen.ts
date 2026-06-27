@@ -9,10 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MonitoringRouteImport } from './routes/monitoring'
+import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MemoBorrowerIdRouteImport } from './routes/memo.$borrowerId'
 
+const MonitoringRoute = MonitoringRouteImport.update({
+  id: '/monitoring',
+  path: '/monitoring',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchitectureRoute = ArchitectureRouteImport.update({
+  id: '/architecture',
+  path: '/architecture',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -32,35 +44,68 @@ const MemoBorrowerIdRoute = MemoBorrowerIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/architecture': typeof ArchitectureRoute
+  '/monitoring': typeof MonitoringRoute
   '/memo/$borrowerId': typeof MemoBorrowerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/architecture': typeof ArchitectureRoute
+  '/monitoring': typeof MonitoringRoute
   '/memo/$borrowerId': typeof MemoBorrowerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/architecture': typeof ArchitectureRoute
+  '/monitoring': typeof MonitoringRoute
   '/memo/$borrowerId': typeof MemoBorrowerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/memo/$borrowerId'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/architecture'
+    | '/monitoring'
+    | '/memo/$borrowerId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/memo/$borrowerId'
-  id: '__root__' | '/' | '/about' | '/memo/$borrowerId'
+  to: '/' | '/about' | '/architecture' | '/monitoring' | '/memo/$borrowerId'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/architecture'
+    | '/monitoring'
+    | '/memo/$borrowerId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  ArchitectureRoute: typeof ArchitectureRoute
+  MonitoringRoute: typeof MonitoringRoute
   MemoBorrowerIdRoute: typeof MemoBorrowerIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/monitoring': {
+      id: '/monitoring'
+      path: '/monitoring'
+      fullPath: '/monitoring'
+      preLoaderRoute: typeof MonitoringRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/architecture': {
+      id: '/architecture'
+      path: '/architecture'
+      fullPath: '/architecture'
+      preLoaderRoute: typeof ArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -88,6 +133,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  ArchitectureRoute: ArchitectureRoute,
+  MonitoringRoute: MonitoringRoute,
   MemoBorrowerIdRoute: MemoBorrowerIdRoute,
 }
 export const routeTree = rootRouteImport
