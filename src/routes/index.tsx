@@ -1,29 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Dashboard } from "@/components/dashboard/Dashboard";
+import { LoginScreen } from "@/components/auth/LoginScreen";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Vantage EWS — MSME Loan Default Early Warning" },
+      {
+        name: "description",
+        content:
+          "Enterprise dashboard for bank loan officers: monitor MSME default risk, GST compliance, cash flow trends, and run what-if scenario simulations.",
+      },
+      { property: "og:title", content: "Vantage EWS — MSME Default Early Warning" },
+      {
+        property: "og:description",
+        content: "Real-time MSME loan default risk monitoring with scenario simulation.",
+      },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen grid place-items-center bg-background">
+        <div className="text-xs text-muted-foreground uppercase tracking-widest">Loading…</div>
+      </div>
+    );
+  }
+  return user ? <Dashboard /> : <LoginScreen />;
 }
