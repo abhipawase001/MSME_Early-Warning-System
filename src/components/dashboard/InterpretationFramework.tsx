@@ -59,7 +59,7 @@ export function InterpretationFramework({ score, tier }: { score: number; tier: 
           Borrower score: <span className="font-mono font-bold text-foreground">{score.toFixed(1)}</span>
         </span>
         <span className="italic">
-          Framework aligns with IDBI Innovate 2026 · Track 04 — common interpretation across MSME loan types.
+          {"\n"}
         </span>
       </div>
     </div>

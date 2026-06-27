@@ -42,7 +42,7 @@ function AboutPage() {
               rel="noreferrer"
               className="text-white/70 hover:text-white"
             >
-              Hackathon Brief ↗
+              Brief ↗
             </a>
           </nav>
         </div>

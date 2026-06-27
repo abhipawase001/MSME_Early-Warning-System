@@ -97,7 +97,7 @@ export function Dashboard() {
               rel="noreferrer"
               className="text-white/70 hover:text-white transition-colors"
             >
-              Hackathon Brief ↗
+              Brief ↗
             </a>
           </nav>
         </div>
