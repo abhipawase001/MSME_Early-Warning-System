@@ -22,9 +22,12 @@ export function PortfolioList({ borrowers, selectedId, onSelect, query, onQueryC
   );
   return (
     <aside className="w-72 border-r border-border bg-surface flex flex-col shrink-0 animate-in-soft">
-      <div className="p-4 border-b border-border flex items-center justify-between bg-accent text-accent-foreground">
-        <span className="font-bold tracking-tight text-sm uppercase">Vantage EWS</span>
-        <div className="size-2 rounded-full bg-risk-green shadow-[0_0_8px_color-mix(in_oklab,var(--color-risk-green)_60%,transparent)]" />
+      <div className="p-4 border-b border-border flex items-center justify-between bg-idbi-green text-white">
+        <div className="leading-tight">
+          <div className="font-display text-sm">Borrower Portfolio</div>
+          <div className="text-[9px] uppercase tracking-[0.18em] text-white/70">MSME · Track 04</div>
+        </div>
+        <div className="size-2 rounded-full bg-idbi-orange shadow-[0_0_8px_color-mix(in_oklab,var(--color-idbi-orange)_70%,transparent)]" />
       </div>
       <div className="p-3 border-b border-border bg-background/50">
         <input
