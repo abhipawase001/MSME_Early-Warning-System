@@ -23,21 +23,21 @@ export function LoginScreen() {
   }
 
   return (
-    <div className="min-h-screen grid place-items-center bg-background p-6">
-      <div className="w-full max-w-sm bg-surface border border-border rounded-xl p-8 animate-in-soft">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="size-8 rounded bg-accent grid place-items-center text-accent-foreground font-bold text-sm">
-            V
+    <div className="min-h-screen grid place-items-center bg-gradient-to-br from-idbi-sand via-background to-idbi-green/5 p-6">
+      <div className="w-full max-w-sm bg-surface border border-border rounded-xl p-8 animate-in-soft shadow-xl shadow-idbi-green-deep/5">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="size-10 rounded-full bg-idbi-green grid place-items-center text-white font-display text-xl">
+            i
           </div>
           <div>
-            <div className="font-bold tracking-tight uppercase text-sm">Vantage EWS</div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-widest">
-              MSME Early Warning System
+            <div className="font-display text-base leading-tight text-idbi-green-deep">IDBI Innovate 2026</div>
+            <div className="text-[10px] text-muted-foreground uppercase tracking-[0.18em]">
+              Track 04 · MSME Default EWS
             </div>
           </div>
         </div>
 
-        <h1 className="text-xl font-semibold mb-1">Loan officer sign-in</h1>
+        <h1 className="font-display text-2xl mb-1 text-foreground">Loan officer sign-in</h1>
         <p className="text-xs text-muted-foreground mb-6">Restricted access. All activity is logged for audit.</p>
 
         <form onSubmit={onSubmit} className="space-y-4">
