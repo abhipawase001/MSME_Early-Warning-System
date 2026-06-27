@@ -1,20 +1,37 @@
-import { CALIBRATION_BINS, CAL_METRICS, plattRecalibrate, isotonicRecalibrate } from "@/lib/calibration";
+import { useMemo, useState } from "react";
+import { COHORTS, type CohortDim, type CohortKey, cohortSampleSize, getCalibrationSlice, isotonicRecalibrate, plattRecalibrate } from "@/lib/calibration";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, ReferenceLine, Legend } from "recharts";
 import { Target } from "lucide-react";
 
+const DIM_LABEL: Record<CohortDim, string> = {
+  all: "All",
+  sector: "Sector",
+  ticket: "Ticket size",
+  borrowerType: "Borrower type",
+};
+
 export function CalibrationPlot({ rawScore }: { rawScore?: number }) {
+  const [dim, setDim] = useState<CohortDim>("all");
+  const [cohort, setCohort] = useState<CohortKey>("all");
+
+  const slice = useMemo(() => getCalibrationSlice(cohort), [cohort]);
+  const n = useMemo(() => cohortSampleSize(cohort), [cohort]);
+
   const data = [
     { binMid: 0, raw: 0, platt: 0, isotonic: 0, perfect: 0 },
-    ...CALIBRATION_BINS.map((b) => ({ ...b, perfect: b.binMid })),
+    ...slice.bins.map((b) => ({ ...b, perfect: b.binMid })),
     { binMid: 100, raw: 100, platt: 100, isotonic: 100, perfect: 100 },
   ];
 
-  const platt = rawScore != null ? plattRecalibrate(rawScore) : null;
-  const iso = rawScore != null ? isotonicRecalibrate(rawScore) : null;
+  const platt = rawScore != null ? plattRecalibrate(rawScore, cohort) : null;
+  const iso = rawScore != null ? isotonicRecalibrate(rawScore, cohort) : null;
+
+  const thinData = n < 800;
+  const drift = slice.metrics.isotonic.ece > 0.025;
 
   return (
     <div className="p-5 border border-border rounded-xl bg-card">
-      <div className="flex items-center gap-2 mb-1">
+      <div className="flex items-center gap-2 mb-1 flex-wrap">
         <Target className="size-3.5 text-idbi-green-deep" />
         <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
           Calibration · Reliability Curve
@@ -26,6 +43,50 @@ export function CalibrationPlot({ rawScore }: { rawScore?: number }) {
       <p className="text-[10px] text-muted-foreground mb-3">
         Predicted PD vs observed default rate on 12-mo holdout. Closer to the dotted diagonal = better calibrated.
       </p>
+
+      {/* Cohort filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-3 p-2 rounded-md bg-muted/40 border border-border">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Slice:</span>
+        <div className="flex gap-1">
+          {(Object.keys(DIM_LABEL) as CohortDim[]).map((d) => (
+            <button
+              key={d}
+              onClick={() => {
+                setDim(d);
+                setCohort(COHORTS[d][0].key);
+              }}
+              className={`px-2 py-0.5 text-[10px] rounded-sm uppercase tracking-wider font-bold transition-colors ${
+                dim === d
+                  ? "bg-idbi-green-deep text-white"
+                  : "bg-card border border-border text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {DIM_LABEL[d]}
+            </button>
+          ))}
+        </div>
+        {dim !== "all" && (
+          <select
+            value={cohort}
+            onChange={(e) => setCohort(e.target.value)}
+            className="ml-auto text-[11px] border border-border rounded px-2 py-1 bg-card"
+          >
+            {COHORTS[dim].map((c) => (
+              <option key={c.key} value={c.key}>{c.label}</option>
+            ))}
+          </select>
+        )}
+        <span className="text-[10px] font-mono text-muted-foreground ml-auto">
+          n = {n.toLocaleString("en-IN")}
+        </span>
+      </div>
+
+      {(thinData || drift) && (
+        <div className={`mb-3 text-[10px] px-2 py-1.5 rounded border ${drift ? "bg-risk-red/5 border-risk-red/30 text-risk-red" : "bg-risk-amber/5 border-risk-amber/30 text-risk-amber"}`}>
+          {drift && <strong>Calibration drift in this cohort.</strong>}{drift && thinData && " "}
+          {thinData && <span>Thin sample (n &lt; 800) — confidence bands widen; treat metrics as directional.</span>}
+        </div>
+      )}
 
       <div className="h-56">
         <ResponsiveContainer width="100%" height="100%">
@@ -42,17 +103,17 @@ export function CalibrationPlot({ rawScore }: { rawScore?: number }) {
         </ResponsiveContainer>
       </div>
 
-      {/* Metrics row */}
+      {/* Metrics row — cohort-specific */}
       <div className="grid grid-cols-3 gap-2 mt-4 text-center">
-        <MetricCard label="Raw" m={CAL_METRICS.raw} accent="text-risk-red" />
-        <MetricCard label="Platt" m={CAL_METRICS.platt} accent="text-risk-amber" />
-        <MetricCard label="Isotonic ✓" m={CAL_METRICS.isotonic} accent="text-idbi-green-deep" />
+        <MetricCard label="Raw" m={slice.metrics.raw} accent="text-risk-red" />
+        <MetricCard label="Platt" m={slice.metrics.platt} accent="text-risk-amber" />
+        <MetricCard label="Isotonic ✓" m={slice.metrics.isotonic} accent="text-idbi-green-deep" />
       </div>
 
       {rawScore != null && (
         <div className="mt-4 p-3 rounded-md bg-muted/40 border border-border">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">
-            Recalibrated PD for this borrower
+            Recalibrated PD for this borrower · cohort = {cohort === "all" ? "All" : cohort}
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">
             <Bucket label="Raw" v={rawScore} muted />
@@ -60,8 +121,8 @@ export function CalibrationPlot({ rawScore }: { rawScore?: number }) {
             <Bucket label="Isotonic" v={iso!} highlight />
           </div>
           <p className="text-[10px] text-muted-foreground italic mt-2 leading-relaxed">
-            Officer-facing PD uses the <strong className="text-foreground">isotonic</strong> output — lowest ECE
-            (0.011) and Brier (0.104). Raw score over-states risk in the mid band by ~7 pts.
+            Officer-facing PD uses the <strong className="text-foreground">isotonic</strong> output, refit per cohort.
+            ECE for this slice = <span className="font-mono text-foreground">{slice.metrics.isotonic.ece.toFixed(3)}</span>.
           </p>
         </div>
       )}
