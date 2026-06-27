@@ -24,7 +24,7 @@ export function CashFlowChart({ data }: Props) {
               borderRadius: 8,
               fontSize: 12,
             }}
-            formatter={(v: number) => `₹${v}Cr`}
+            formatter={(v) => `₹${v}Cr`}
           />
           <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" iconSize={6} />
           <Line type="monotone" dataKey="inflow" stroke="var(--color-accent)" strokeWidth={2} dot={{ r: 3 }} name="Inflow" />
