@@ -11,6 +11,9 @@ import { PortfolioHeatmap } from "./PortfolioHeatmap";
 import { AlertsFeed } from "./AlertsFeed";
 import { ModelPerformance } from "./ModelPerformance";
 import { DemoControls } from "./DemoControls";
+import { PDTermStructure } from "./PDTermStructure";
+import { ModelRouter } from "./ModelRouter";
+import { TriggerChips } from "./TriggerChips";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, Info, FileText } from "lucide-react";
 
@@ -89,7 +92,13 @@ export function Dashboard() {
           <nav className="flex items-center gap-5 text-[12px]">
             <span className="text-white font-medium">Dashboard</span>
             <Link to="/about" className="text-white/70 hover:text-white transition-colors">
-              About / Approach
+              About
+            </Link>
+            <Link to="/architecture" className="text-white/70 hover:text-white transition-colors">
+              Architecture
+            </Link>
+            <Link to="/monitoring" className="text-white/70 hover:text-white transition-colors">
+              Monitoring
             </Link>
             <a
               href="https://hack2skill.com/event/idbinnovate"
