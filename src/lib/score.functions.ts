@@ -54,14 +54,35 @@ export const scoreScenario = createServerFn({ method: "POST" })
         signal: AbortSignal.timeout(8000),
       });
       if (!res.ok) throw new Error(`ML ${res.status}`);
-      const payload = (await res.json()) as Partial<ScoreResult> & { score?: number };
+      const payload = (await res.json()) as {
+        score?: number;
+        tier?: ScoreResult["tier"];
+        factors?: ScoreResult["factors"];
+        status?: string;
+      };
       if (typeof payload.score !== "number") return fallback;
+      // Lambda returns 0..1 — scale to 0..100. If already >1 assume it's 0..100.
+      const scaled = payload.score <= 1 ? payload.score * 100 : payload.score;
+      const score = Math.max(0, Math.min(100, Math.round(scaled * 10) / 10));
+      const statusTier: Record<string, ScoreResult["tier"]> = {
+        Normal: "low",
+        Watch: "moderate",
+        Elevated: "elevated",
+        High: "high",
+        Critical: "high",
+      };
+      const tier: ScoreResult["tier"] =
+        payload.tier ??
+        (payload.status ? statusTier[payload.status] : undefined) ??
+        (score < 35 ? "low" : score < 60 ? "moderate" : score < 80 ? "elevated" : "high");
+
       return {
-        score: payload.score,
-        tier: payload.tier ?? fallback.tier,
+        score,
+        tier,
         factors: payload.factors ?? fallback.factors,
         source: "ml",
       };
+
     } catch (err) {
       console.warn("[score] ML endpoint failed, using fallback:", err);
       return fallback;
