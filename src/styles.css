@@ -40,7 +40,12 @@
   --color-risk-red: var(--risk-red);
   --color-surface: var(--surface);
   --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "DM Serif Display", "Inter", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --color-idbi-green: var(--idbi-green);
+  --color-idbi-green-deep: var(--idbi-green-deep);
+  --color-idbi-orange: var(--idbi-orange);
+  --color-idbi-sand: var(--idbi-sand);
 }
 
 :root {
