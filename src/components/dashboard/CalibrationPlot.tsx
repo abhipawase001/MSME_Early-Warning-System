@@ -32,7 +32,7 @@ export function CalibrationPlot({ rawScore }: { rawScore?: number }) {
           <LineChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
             <XAxis dataKey="binMid" type="number" domain={[0, 100]} fontSize={10} tickFormatter={(v) => `${v}%`} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} label={{ value: "Predicted PD", fontSize: 9, position: "insideBottom", offset: -2, fill: "hsl(var(--muted-foreground))" }} />
             <YAxis type="number" domain={[0, 100]} fontSize={10} tickFormatter={(v) => `${v}%`} tickLine={false} axisLine={false} />
-            <Tooltip contentStyle={{ fontSize: 11, borderRadius: 6 }} formatter={(v: number, name) => [`${Number(v).toFixed(1)}%`, name]} />
+            <Tooltip contentStyle={{ fontSize: 11, borderRadius: 6 }} formatter={(v) => `${Number(v).toFixed(1)}%`} />
             <Legend wrapperStyle={{ fontSize: 10 }} iconSize={8} />
             <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 100, y: 100 }]} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" ifOverflow="extendDomain" />
             <Line type="monotone" dataKey="raw" name="Raw XGBoost" stroke="hsl(0 70% 55%)" strokeWidth={2} dot={{ r: 2.5 }} />
