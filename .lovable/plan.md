@@ -1,49 +1,64 @@
 ## Goal
-Make this submission unmistakably an **IDBI Innovate 2026 — Track 04 (Default Prediction Model)** entry: adopt IDBI's visual identity (deep green + orange on white) and tighten the narrative judges will score on.
+Push the IDBI Innovate Track 04 submission from "good demo" to "judge-memorable" by closing the gaps judges actually score: **prediction quality narrative, explainability depth, decision-ready output, and live demo wow-factor**.
 
-## Visual rebrand (IDBI identity)
+## What's already strong
+Split workspace UI, IDBI rebrand, AWS Lambda wired, scenario sim, interpretation framework, /about judge page.
 
-New design tokens in `src/styles.css` (replacing current dark enterprise palette):
-- `--idbi-green: oklch(0.42 0.10 160)` (~#0A6E4E) — primary
-- `--idbi-green-deep: oklch(0.30 0.08 160)` — sidebar/header band
-- `--idbi-orange: oklch(0.70 0.18 50)` (~#F37021) — CTAs, risk highlights, runner-up accent
-- `--idbi-sand: oklch(0.98 0.01 90)` — page background
-- Risk tiers re-mapped to IDBI palette: low=green, moderate=sand/amber, elevated=orange, high=deep red
-- Typography: keep Inter for body; switch display to **"DM Serif Display"** for headings (matches IDBI's editorial banking tone) + JetBrains Mono kept for numerics
-- Header band: deep-green with white type; orange "Apply / Run Scenario" buttons — mirrors idbibank.in
+## What's missing (and what we'll add)
 
-## Track 04 alignment (content + UX)
+### 1. Portfolio Risk Heatmap (top of dashboard)
+A compact 12-month × borrowers grid showing PD trajectory per borrower over the prediction horizon. Judges instantly see the "12-month-ahead" claim visualized, not just stated. Color-graded cells (green→orange→red), click a cell to load that borrower at that month.
 
-1. **Header rebrand**: "IDBI Innovate 2026 · MSME Default Early Warning" with Track 04 badge and tagline "12-month-ahead PD · structured + alternate data · common interpretation framework".
-2. **Risk score card**: add "12-month PD" label, show baseline (16–22%) vs target (90%) accuracy chip so judges immediately see the problem framing.
-3. **Data sources strip** on each borrower: chips for GST · UPI · Bank Statements · Bureau · EPFO (visual; mock data) — proves "structured + unstructured" claim.
-4. **Common Interpretation Framework** panel: a small legend block explaining the unified 0–100 score and tier mapping used across loan types (working capital, term loan, equipment) — directly answers the brief's "common interpretation framework" requirement.
-5. **Risk Factors** panel: add per-factor "direction" arrows + plain-English explanation, with a tooltip noting SHAP-style attribution.
+### 2. Early Warning Alerts feed
+Right-rail card listing auto-generated alerts: "GST filing lapsed 14d — Borrower X moved Watch → Elevated", "UPI velocity dropped 32% WoW", "DSCR breached covenant". Each alert has severity, timestamp, borrower link, and an "Acknowledge" action. Mock-driven but realistic.
 
-## New `/about` route — judge landing page
+### 3. Explainability upgrade — Waterfall + Counterfactual
+Replace the flat factor bars with:
+- **SHAP-style waterfall**: base rate → +/- contribution per factor → final PD. Visually proves "explainable AI".
+- **Counterfactual hint**: "Reduce payment lag by 15 days → PD drops to 42 (Watch)". Computed against the Lambda by probing nearby scenarios.
 
-Single scrollable page, IDBI-styled:
-- Hero with IDBI-Innovate badge, problem statement (quoted from brief), team-name placeholder.
-- "Why this wins" KPI strip: 90% target accuracy · 12-mo horizon · <500ms inference · explainable.
-- "Approach" — 3 cards: Data Fusion (GST/UPI/Bank/Bureau), AWS Lambda ML, Explainable Scenario Sim.
-- Architecture diagram (clean SVG): Browser → TanStack server fn → AWS Lambda (Python) → JSON {score, status}.
-- Demo credentials box; CTA buttons "Open Dashboard" / "View Hackathon Brief".
+### 4. Decision Memo (PDF export)
+"Generate Credit Memo" button → opens a print-ready A4 view with borrower snapshot, current PD, top 5 drivers, scenario results, recommended action per the interpretation framework. Uses `window.print()` with a dedicated print stylesheet — no extra deps. This is the artifact a loan officer actually hands to a credit committee.
 
-## Nav + meta
-- Header links: Dashboard · About · Hackathon Brief (external).
-- Root route head: title "IDBI Innovate 2026 · MSME Default Early Warning" + Track 04 meta description + OG.
+### 5. Model Performance card (judge bait)
+Small card on /about and dashboard header showing AUC 0.91, KS 0.62, Gini 0.82, PSI stable, confusion matrix at chosen cutoff. Mock numbers clearly labeled "validation set · synthetic". Directly addresses the 90% accuracy target in the brief.
+
+### 6. Live data-source simulator
+Toggle on each borrower: "Simulate GST filing delay" / "Simulate UPI drop" → animates the score change live during demo. Makes the alternate-data story tangible.
+
+### 7. Demo polish
+- Loading skeletons instead of spinners
+- Subtle Framer Motion on score changes (number tween, tier-color transition)
+- Keyboard shortcut `?` opens a demo cheat-sheet (judges love this)
+- Fixed "Demo Mode" ribbon with reset button to restore mock state
+
+### 8. README / submission doc
+`SUBMISSION.md` at repo root with: problem framing, approach, architecture diagram, accuracy claims, how-to-run, team slot, demo script (3-minute walkthrough judges can follow).
+
+## Out of scope
+- Training a real model (we keep the Lambda as the inference layer)
+- Replacing Firebase auth
+- Real GST/UPI API integration (kept as labeled mock signals)
 
 ## Files touched
-- `src/styles.css` — palette + fonts swap
-- `src/routes/__root.tsx` — head meta, font link
-- `src/routes/about.tsx` — **new**
-- `src/components/dashboard/Dashboard.tsx` — header band, badges, KPI chips
-- `src/components/dashboard/PortfolioList.tsx` — data-source chips
-- `src/components/dashboard/RiskFactors.tsx` — directions + framework tooltip
-- New `src/components/dashboard/InterpretationFramework.tsx`
-- `src/components/auth/LoginScreen.tsx` — IDBI-styled login
+- `src/components/dashboard/PortfolioHeatmap.tsx` — new
+- `src/components/dashboard/AlertsFeed.tsx` — new
+- `src/components/dashboard/WaterfallExplain.tsx` — new (replaces RiskFactors content)
+- `src/components/dashboard/CounterfactualHint.tsx` — new
+- `src/components/dashboard/ModelPerformance.tsx` — new
+- `src/components/dashboard/CreditMemo.tsx` + `src/routes/memo.$borrowerId.tsx` — new print route
+- `src/components/dashboard/DemoControls.tsx` — new (simulator toggles + cheat-sheet)
+- `src/components/dashboard/Dashboard.tsx` — wire new panels
+- `src/lib/mock-data.ts` — add 12-mo PD trajectory, alerts, model metrics
+- `src/lib/risk.ts` — counterfactual helper
+- `src/styles.css` — print styles, motion tokens
+- `SUBMISSION.md` — new
 
-Out of scope: changing ML logic, auth provider, or real GST/UPI APIs (kept as mock chips clearly labeled "demo data").
+## Suggested build order
+1. Heatmap + Alerts (visible wins, 1 pass)
+2. Waterfall + Counterfactual (explainability story)
+3. Credit Memo PDF route (decision-ready artifact)
+4. Model Performance + Demo Controls (judge polish)
+5. SUBMISSION.md + final smoke test
 
-## Note on logo
-I will **not** copy IDBI's actual logo (trademark). I'll use a neutral "IDBI Innovate 2026 · Track 04" wordmark badge so the submission stays compliant.
+Want me to build all of this, or pick a subset (e.g. just 1–3 for the strongest visual punch)?
