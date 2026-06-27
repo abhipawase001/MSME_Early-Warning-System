@@ -78,22 +78,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Vantage EWS — MSME Loan Default Early Warning" },
+      { title: "IDBI Innovate 2026 · MSME Default Early Warning System" },
       {
         name: "description",
         content:
-          "Enterprise early warning system for MSME loan defaults: risk scoring, GST compliance, cash flow trends, and what-if scenario simulation.",
+          "IDBI Innovate Hackathon 2026 · Track 04 — A 12-month-ahead MSME default prediction system fusing GST, UPI, bank statement and bureau data, with explainable risk drivers and a real-time scenario workbench.",
       },
-      { name: "author", content: "Vantage Risk" },
-      { property: "og:title", content: "Vantage EWS" },
-      { property: "og:description", content: "MSME default risk monitoring for bank loan officers." },
+      { name: "author", content: "Team Vantage · IDBI Innovate 2026" },
+      { property: "og:title", content: "IDBI Innovate 2026 · MSME Default EWS" },
+      { property: "og:description", content: "Track 04 submission — 12-month MSME default prediction with explainable scoring and scenario simulation." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap",
       },
     ],
   }),
