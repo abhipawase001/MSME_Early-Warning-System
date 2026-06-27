@@ -116,7 +116,7 @@ function MonitoringPage() {
                 <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} />
                 <YAxis fontSize={10} tickLine={false} axisLine={false} domain={[0.8, 0.95]} />
                 <ReferenceLine y={0.9} stroke="hsl(var(--idbi-green-hsl, 152 70% 20%))" strokeDasharray="3 3" label={{ value: "90% target", fontSize: 9, fill: "hsl(var(--muted-foreground))", position: "insideTopLeft" }} />
-                <Tooltip contentStyle={{ fontSize: 11, borderRadius: 6 }} formatter={(v: number) => [v.toFixed(3), "AUC"]} />
+                <Tooltip contentStyle={{ fontSize: 11, borderRadius: 6 }} formatter={(v) => [Number(v).toFixed(3), "AUC"]} />
                 <Line type="monotone" dataKey="auc" stroke="hsl(22 90% 52%)" strokeWidth={2.5} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -173,7 +173,7 @@ function FairnessCard({ title, data }: { title: string; data: { slice: string; p
           <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
             <XAxis dataKey="slice" fontSize={9} tickLine={false} axisLine={{ stroke: "hsl(var(--border))" }} interval={0} angle={-15} textAnchor="end" height={50} />
             <YAxis fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} />
-            <Tooltip contentStyle={{ fontSize: 11, borderRadius: 6 }} formatter={(v: number, _n, ctx) => [`${v}% (n=${ctx.payload.n})`, "Avg PD"]} />
+            <Tooltip contentStyle={{ fontSize: 11, borderRadius: 6 }} formatter={(v, _n, ctx) => [`${v}% (n=${(ctx as { payload?: { n?: number } }).payload?.n ?? ""})`, "Avg PD"]} />
             <Bar dataKey="pd" radius={[4, 4, 0, 0]}>
               {data.map((d) => (
                 <Cell key={d.slice} fill={d.pd > 40 ? "hsl(var(--risk-red-hsl, 0 75% 50%))" : d.pd > 30 ? "hsl(22 90% 52%)" : "hsl(152 50% 35%)"} />

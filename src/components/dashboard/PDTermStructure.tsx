@@ -51,7 +51,7 @@ export function PDTermStructure({ borrower }: { borrower: Borrower }) {
             <ReferenceLine y={60} stroke="hsl(var(--border))" strokeDasharray="3 3" label={{ value: "Elevated", fontSize: 9, fill: "hsl(var(--muted-foreground))", position: "insideTopRight" }} />
             <Tooltip
               contentStyle={{ fontSize: 11, borderRadius: 6 }}
-              formatter={(v: number) => [`${v.toFixed(1)}%`, "Cum. PD"]}
+              formatter={(v) => [`${Number(v).toFixed(1)}%`, "Cum. PD"]}
               labelFormatter={(m) => `Month ${m}`}
             />
             <Area type="monotone" dataKey="pd" stroke="hsl(22 90% 52%)" strokeWidth={2} fill="url(#pdfill)" />
