@@ -71,10 +71,11 @@ export const scoreScenario = createServerFn({ method: "POST" })
         High: "high",
         Critical: "high",
       };
-      const tier =
+      const tier: ScoreResult["tier"] =
         payload.tier ??
-        (payload.status && statusTier[payload.status]) ??
+        (payload.status ? statusTier[payload.status] : undefined) ??
         (score < 35 ? "low" : score < 60 ? "moderate" : score < 80 ? "elevated" : "high");
+
       return {
         score,
         tier,
