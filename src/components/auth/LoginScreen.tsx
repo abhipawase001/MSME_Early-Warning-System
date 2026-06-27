@@ -65,7 +65,7 @@ export function LoginScreen() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-accent text-accent-foreground text-xs font-bold rounded uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full py-2.5 bg-idbi-orange text-white text-xs font-bold rounded uppercase tracking-widest hover:brightness-95 transition disabled:opacity-50"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
