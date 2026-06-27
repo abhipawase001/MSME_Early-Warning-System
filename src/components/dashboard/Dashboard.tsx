@@ -14,6 +14,8 @@ import { DemoControls } from "./DemoControls";
 import { PDTermStructure } from "./PDTermStructure";
 import { ModelRouter } from "./ModelRouter";
 import { TriggerChips } from "./TriggerChips";
+import { CalibrationPlot } from "./CalibrationPlot";
+import { DocumentNLP } from "./DocumentNLP";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, Info, FileText } from "lucide-react";
 
@@ -224,6 +226,12 @@ export function Dashboard() {
             <div className="col-span-2">
               <ModelPerformance />
             </div>
+          </div>
+
+          {/* Calibration + Document NLP — trustworthy PD + unstructured data lift */}
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            <CalibrationPlot rawScore={baseline.score} />
+            <DocumentNLP borrower={borrower} />
           </div>
 
           <div className="grid grid-cols-2 gap-6">
