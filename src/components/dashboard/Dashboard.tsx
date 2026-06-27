@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { BORROWERS } from "@/lib/mock-data";
 import { computeFallbackScore, DEFAULT_SCENARIO, tierColor, tierLabel } from "@/lib/risk";
 import { PortfolioList } from "./PortfolioList";
@@ -7,8 +7,12 @@ import { ScenarioPanel } from "./ScenarioPanel";
 import { CashFlowChart } from "./CashFlowChart";
 import { RiskFactors } from "./RiskFactors";
 import { InterpretationFramework } from "./InterpretationFramework";
+import { PortfolioHeatmap } from "./PortfolioHeatmap";
+import { AlertsFeed } from "./AlertsFeed";
+import { ModelPerformance } from "./ModelPerformance";
+import { DemoControls } from "./DemoControls";
 import { useAuth } from "@/hooks/use-auth";
-import { LogOut, Info } from "lucide-react";
+import { LogOut, Info, FileText } from "lucide-react";
 
 const formatInr = (n: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -19,6 +23,7 @@ export function Dashboard() {
   const [selectedId, setSelectedId] = useState(BORROWERS[0].id);
   const [query, setQuery] = useState("");
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const borrower = useMemo(
     () => BORROWERS.find((b) => b.id === selectedId) ?? BORROWERS[0],
@@ -39,10 +44,28 @@ export function Dashboard() {
     [borrower],
   );
 
+  // Keyboard shortcuts: 1-5 select borrower, m opens memo, a opens about
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const n = Number(e.key);
+      if (n >= 1 && n <= BORROWERS.length) {
+        setSelectedId(BORROWERS[n - 1].id);
+      } else if (e.key === "m") {
+        navigate({ to: "/memo/$borrowerId", params: { borrowerId: selectedId } });
+      } else if (e.key === "a") {
+        navigate({ to: "/about" });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [navigate, selectedId]);
+
   const tier = baseline.tier;
   const tierC = tierColor(tier);
-  // 12-month PD heuristic from composite score (display only)
   const pd12m = Math.min(99, Math.max(1, Math.round(baseline.score * 0.85))).toFixed(0);
+  // sector base rate proxy for waterfall (borrower.baseScore minus drivers)
+  const sectorBase = Math.max(15, borrower.baseScore - baseline.factors.reduce((s, f) => s + f.impact, 0));
 
   return (
     <div className="flex flex-col h-screen w-full bg-background text-foreground overflow-hidden">
@@ -120,7 +143,7 @@ export function Dashboard() {
             </div>
             <div className="flex items-center gap-6">
               <div className="text-right">
-                <div className={`font-mono text-5xl font-bold tracking-tighter text-${tierC} tabular-nums leading-none`}>
+                <div className={`font-mono text-5xl font-bold tracking-tighter text-${tierC} tabular-nums leading-none transition-colors`}>
                   {baseline.score.toFixed(1)}
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase font-semibold tracking-widest mt-1">
@@ -130,6 +153,13 @@ export function Dashboard() {
                   12-mo PD ≈ {pd12m}%
                 </div>
               </div>
+              <Link
+                to="/memo/$borrowerId"
+                params={{ borrowerId: borrower.id }}
+                className="px-3 py-2 rounded bg-idbi-orange text-white text-[10px] font-bold uppercase tracking-widest hover:brightness-95 transition inline-flex items-center gap-1.5"
+              >
+                <FileText className="size-3.5" /> Credit Memo
+              </Link>
               {user && (
                 <div className="flex items-center gap-2 pl-6 border-l border-border">
                   <div className="text-right">
@@ -157,6 +187,21 @@ export function Dashboard() {
             <Kpi label="Explainability" value="SHAP" hint="per-factor" />
           </div>
 
+          {/* Portfolio heatmap (top, full width) */}
+          <div className="mb-6">
+            <PortfolioHeatmap borrowers={BORROWERS} selectedId={selectedId} onSelect={setSelectedId} />
+          </div>
+
+          {/* Alerts + Model Performance */}
+          <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="col-span-1">
+              <AlertsFeed onSelectBorrower={setSelectedId} />
+            </div>
+            <div className="col-span-2">
+              <ModelPerformance />
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-6">
             <section className="col-span-2 p-5 border border-border rounded-xl bg-card">
               <div className="flex justify-between items-center mb-4">
@@ -172,12 +217,12 @@ export function Dashboard() {
 
             <section className="p-5 border border-border rounded-xl bg-card">
               <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-6">
-                Primary Risk Drivers
+                SHAP Waterfall · Top Risk Drivers
               </h3>
-              <RiskFactors factors={baseline.factors} />
-              <p className="text-[10px] text-muted-foreground italic mt-6 leading-relaxed">
-                Positive impacts increase default probability; negative impacts reduce it. Driver weights mirror SHAP
-                contributions returned by the upstream model.
+              <RiskFactors factors={baseline.factors} baseRate={sectorBase} finalScore={baseline.score} />
+              <p className="text-[10px] text-muted-foreground italic mt-4 leading-relaxed">
+                Sector base rate → per-driver contributions → final composite. Red bars push risk up, green bars pull
+                it down. Mirrors SHAP attribution returned by the upstream model.
               </p>
             </section>
 
@@ -213,6 +258,8 @@ export function Dashboard() {
 
         <ScenarioPanel borrower={borrower} />
       </div>
+
+      <DemoControls />
     </div>
   );
 }

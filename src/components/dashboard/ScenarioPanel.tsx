@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { scoreScenario } from "@/lib/score.functions";
 import { computeFallbackScore, DEFAULT_SCENARIO, tierFor, type ScoreResult, type ScenarioInputs } from "@/lib/risk";
 import type { Borrower } from "@/lib/mock-data";
+import { CounterfactualHint } from "./CounterfactualHint";
+
 
 interface Props {
   borrower: Borrower;
@@ -124,13 +127,16 @@ export function ScenarioPanel({ borrower }: Props) {
           onChange={(v) => setScenario((s) => ({ ...s, gstFilingDelayDays: v }))}
         />
 
+        <CounterfactualHint borrower={borrower} scenario={scenario} currentScore={display.score} />
+
         <div className="pt-4 space-y-2">
-          <button
-            type="button"
-            className="w-full py-2.5 bg-accent text-accent-foreground text-xs font-bold rounded uppercase tracking-widest shadow-lg shadow-accent/10 hover:opacity-90 transition-opacity"
+          <Link
+            to="/memo/$borrowerId"
+            params={{ borrowerId: borrower.id }}
+            className="block w-full py-2.5 bg-idbi-orange text-white text-xs font-bold rounded uppercase tracking-widest text-center shadow-lg shadow-idbi-orange/20 hover:brightness-95 transition"
           >
-            Generate Risk Memo
-          </button>
+            Generate Credit Memo
+          </Link>
           <button
             type="button"
             onClick={() => setScenario(DEFAULT_SCENARIO)}
