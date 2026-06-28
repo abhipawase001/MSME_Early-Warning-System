@@ -4,7 +4,9 @@ import { extractDocumentSignals, type NlpResult } from "@/lib/nlp.functions";
 import type { Borrower } from "@/lib/mock-data";
 import { FileSearch, Loader2, Sparkles } from "lucide-react";
 
-const SAMPLES: Record<string, string> = {
+type DocumentType = "loan_note" | "financial_statement" | "bank_statement" | "auditor_remark" | "news_clip";
+
+const SAMPLES: Record<DocumentType, string> = {
   loan_note: `RM site visit 15-Jun-2026: Borrower's working capital cycle stretched from 62 to 91 days due to delayed receivables from two top buyers (auto OEM). Promoter confirms a litigation notice received from supplier over disputed Rs 1.2 Cr invoice. GST 3B filing for May was filed 11 days late. Inventory build-up observed at plant; management plans to liquidate slow-moving SKUs by Q2. EMI for the term loan paid on time but one cheque bounced earlier in April. Promoter committed to infuse Rs 50 lakh equity by quarter-end.`,
   financial_statement: `FY26 unaudited: Revenue down 14% YoY to Rs 38.2 Cr against guidance of flat growth. EBITDA margin compressed from 11.4% to 7.8% driven by raw material inflation. Current ratio fell from 1.42 to 1.08. Debtor days expanded to 96. Long-term debt up Rs 4 Cr to fund capex. Interest coverage at 1.6x vs 2.4x prior year. Auditor noted going-concern emphasis-of-matter on one foreign subsidiary.`,
   bank_statement: `Apr-Jun bank statement summary: avg monthly inflow Rs 2.8 Cr (down from Rs 3.4 Cr). Three cheque returns observed in May. UPI inflow remained stable. Two new outflows tagged as "supplier dispute settlement". Closing balance trending downward, hit minimum Rs 4 lakh on 12-Jun.`,
@@ -14,7 +16,7 @@ const SAMPLES: Record<string, string> = {
 
 export function DocumentNLP({ borrower, onUplift }: { borrower: Borrower; onUplift?: (pts: number) => void }) {
   const extract = useServerFn(extractDocumentSignals);
-  const [docType, setDocType] = useState<keyof typeof SAMPLES>("loan_note");
+  const [docType, setDocType] = useState<DocumentType>("loan_note");
   const [text, setText] = useState(SAMPLES.loan_note);
   const [result, setResult] = useState<NlpResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -61,7 +63,7 @@ export function DocumentNLP({ borrower, onUplift }: { borrower: Borrower; onUpli
         <select
           value={docType}
           onChange={(e) => {
-            const v = e.target.value as keyof typeof SAMPLES;
+            const v = e.target.value as DocumentType;
             setDocType(v);
             setText(SAMPLES[v]);
             setResult(null);
