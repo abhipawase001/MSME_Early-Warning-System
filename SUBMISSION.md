@@ -1,7 +1,9 @@
 # IDBI Innovate 2026 — Track 04 Submission
 ## MSME Default Early Warning System
 
-> Predicts MSME default probability **12 months ahead** by fusing structured filings with alternate-data signals, served via AWS Lambda with a SHAP-style explainer and a real-time scenario workbench for loan officers.
+> Predicts MSME default probability **12 months ahead** by fusing structured filings with alternate-data signals, served via AWS Lambda with a SHAP-style explainer and a real-time scenario workbench.
+
+**🚀 Live Demo:** [msme-earl-warning.netlify.app](https://msme-earl-warning.netlify.app)
 
 ---
 
