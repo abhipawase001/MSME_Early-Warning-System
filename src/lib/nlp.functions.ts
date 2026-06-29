@@ -28,7 +28,7 @@ const signalSchema = z.object({
 export type NlpResult = z.infer<typeof signalSchema>;
 
 export const extractDocumentSignals = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => inputSchema.parse(data))
+  .validator(inputSchema)
   .handler(async ({ data }): Promise<NlpResult> => {
     const key = process.env.LOVABLE_API_KEY;
     if (!key) {

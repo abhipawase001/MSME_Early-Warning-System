@@ -11,7 +11,7 @@ const scenarioSchema = z.object({
 });
 
 export const scoreScenario = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => scenarioSchema.parse(data))
+  .validator(scenarioSchema)
   .handler(async ({ data }): Promise<ScoreResult> => {
     const borrower = BORROWERS.find((b) => b.id === data.borrowerId);
     if (!borrower) throw new Error("Borrower not found");
